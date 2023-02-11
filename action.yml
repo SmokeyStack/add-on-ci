@@ -1,0 +1,15 @@
+name: 'bds-gametest-run'
+description: 'Hacky workaround, not recommended to use by others'
+author: 'SmokeyStack'
+inputs:
+  BDS_PATH:
+    required: true
+    description: 'The path to BDS on the filesystem'
+    default: './bds/'
+
+runs:
+  using: 'node16'
+  main: 'dist/index.js'
+branding:
+  icon: 'check-square'
+  color: 'orange'
