@@ -1,6 +1,133 @@
 require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
+/***/ 6490:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.create_debug_pack = void 0;
+const core = __importStar(__nccwpck_require__(2186));
+const uuid_1 = __nccwpck_require__(5840);
+const fs_1 = __nccwpck_require__(7147);
+const path = __importStar(__nccwpck_require__(1017));
+const mcstructure_1 = __nccwpck_require__(9074);
+const debug_tests_1 = __nccwpck_require__(9253);
+const inputs_1 = __nccwpck_require__(8766);
+const STANDARD_FLAGS = {
+    flag: 'w'
+};
+const DEVELOPMENT_BEHAVIOR_PACKS_PATH = 'development_behavior_packs';
+function create_debug_pack(pack_id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const base_path = path.join(process.cwd(), inputs_1.BDS_PATH, DEVELOPMENT_BEHAVIOR_PACKS_PATH, 'debug_pack');
+        yield fs_1.promises.mkdir(path.join(base_path, 'scripts'), { recursive: true });
+        yield fs_1.promises.mkdir(path.join(base_path, 'structures', 'debugtests'), {
+            recursive: true
+        });
+        yield fs_1.promises.writeFile(path.join(base_path, 'structures', 'debugtests', 'always_succeed.mcstructure'), mcstructure_1.STRUCTURE_BYTES, STANDARD_FLAGS);
+        core.debug('wrote always_succeed.mcstructure');
+        yield fs_1.promises.writeFile(path.join(base_path, 'structures', 'debugtests', 'always_fail.mcstructure'), mcstructure_1.STRUCTURE_BYTES, STANDARD_FLAGS);
+        core.debug('wrote always_fail.mcstructure');
+        yield fs_1.promises.writeFile(path.join(base_path, 'scripts', 'Main.js'), debug_tests_1.DEBUG_TESTS, STANDARD_FLAGS);
+        core.debug('wrote Main.js');
+        yield fs_1.promises.writeFile(path.join(base_path, 'manifest.json'), JSON.stringify({
+            format_version: 2,
+            header: {
+                description: 'Debug Pack for Testing',
+                name: 'Debug Pack',
+                uuid: pack_id,
+                version: [0, 0, 1],
+                min_engine_version: [1, 14, 0]
+            },
+            modules: [
+                {
+                    description: 'Debug Pack for Testing',
+                    type: 'script',
+                    uuid: (0, uuid_1.v4)(),
+                    version: [0, 0, 1],
+                    language: 'JavaScript',
+                    entry: 'scripts/Main.js'
+                }
+            ],
+            dependencies: [
+                {
+                    module_name: '@minecraft/server-gametest',
+                    version: '1.0.0-beta'
+                }
+            ]
+        }), STANDARD_FLAGS);
+        core.debug('wrote manifest.json');
+    });
+}
+exports.create_debug_pack = create_debug_pack;
+
+
+/***/ }),
+
+/***/ 9253:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DEBUG_TEST_TAG = exports.DEBUG_TESTS = void 0;
+// DEBUG_TESTS just servers as a static bit of code we dump
+// into a dummy pack and run with every action run, the idea
+// being that there will always be at least one test present
+// and able to run. Lacking this a badly supplied test
+// can make the test fail to start and BDS to operate
+// in its normal manner.
+exports.DEBUG_TESTS = `import * as GameTest from "@minecraft/server-gametest";
+
+GameTest.register("debugtests", "always_fail", (_test) => {})
+  .maxTicks(50)
+  .tag(GameTest.Tags.suiteDebug);
+GameTest.register("debugtests", "always_succeed", (test) => {
+  test.runAfterDelay(40, () => {
+    test.succeed();
+  });
+})
+  .maxTicks(50)
+  .tag(GameTest.Tags.suiteDebug);`;
+exports.DEBUG_TEST_TAG = 'debugtests';
+
+
+/***/ }),
+
 /***/ 3109:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -8,7 +135,11 @@ require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
 }) : (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
@@ -45,11 +176,22 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const exec = __importStar(__nccwpck_require__(1514));
 const glob = __importStar(__nccwpck_require__(8090));
-const path = __importStar(__nccwpck_require__(5622));
+const uuid_1 = __nccwpck_require__(5840);
+const fs_1 = __nccwpck_require__(7147);
+const path = __importStar(__nccwpck_require__(1017));
+const server_props_1 = __nccwpck_require__(1353);
+const debug_tests_1 = __nccwpck_require__(9253);
+const debug_pack_1 = __nccwpck_require__(6490);
 const inputs_1 = __nccwpck_require__(8766);
-const promises_1 = __nccwpck_require__(9225);
+const promises_1 = __nccwpck_require__(3292);
+const LOG_PATH = 'logs';
+const TEST_CONFIG_FILE = 'test_config.json';
+const TEST_RESULTS_FILE = 'test-results-gametest.json';
+const WORLDS_PATH = 'worlds';
+const WORLD_NAME = 'Bedrock level';
+const WORLD_BEHAVIOR_PACKS_FILE = 'world_behavior_packs.json';
 function run() {
-    var e_1, _a;
+    var _a, e_1, _b, _c;
     return __awaiter(this, void 0, void 0, function* () {
         try {
             switch (process.platform) {
@@ -60,26 +202,163 @@ function run() {
                     throw new Error('Unsupported platform: ${process.platform}');
                 }
             }
+            let debug_pack_uuid = (0, uuid_1.v4)();
+            const pack_data = [
+                {
+                    pack_id: debug_pack_uuid,
+                    version: [0, 0, 1]
+                }
+            ];
+            for (const p of inputs_1.PACKS) {
+                try {
+                    const pack_array = JSON.parse(p);
+                    core.info(`Concatting: ${JSON.stringify(pack_array)}`);
+                    for (const pd of pack_array) {
+                        core.info(`Adding pack id: ${pd.pack_id}`);
+                        pack_data.push(pd);
+                    }
+                }
+                catch (e) {
+                    // do "uuid - [v, v, v]" format here
+                }
+            }
+            core.startGroup('Setup configs');
+            const test_config_data = JSON.stringify({
+                automation_repeat_count: inputs_1.AUTOMATION_REPEAT_COUNT,
+                automation_repeat_failures_only: inputs_1.AUTOMATION_REPEAT_FAILURES_ONLY,
+                max_tests_per_batch: inputs_1.MAX_TESTS_PER_BATCH,
+                timeout_ticks: inputs_1.TIMEOUT_TICKS,
+                automation_testrun_id: '123456789',
+                automation_gametest_tags: [debug_tests_1.DEBUG_TEST_TAG, ...inputs_1.TEST_TAGS]
+            });
+            yield fs_1.promises.writeFile(path.join(process.cwd(), inputs_1.BDS_PATH, TEST_CONFIG_FILE), test_config_data, {
+                flag: 'w'
+            });
+            core.debug('wrote test_config.json');
+            yield (0, debug_pack_1.create_debug_pack)(debug_pack_uuid);
+            yield fs_1.promises.writeFile(path.join(process.cwd(), inputs_1.BDS_PATH, 'server.properties'), server_props_1.SERVER_PROPERTIES, {
+                flag: 'w'
+            });
+            core.debug('wrote server.properties');
+            const world_base_path = path.join(process.cwd(), inputs_1.BDS_PATH, 'worlds', 'Bedrock level');
+            yield fs_1.promises.mkdir(path.join(world_base_path, 'scripts'), {
+                recursive: true
+            });
+            // await promises.writeFile(
+            //   path.join(world_base_path, 'level.dat'),
+            //   LEVEL_DAT,
+            //   {
+            //     flag: 'w'
+            //   }
+            // )
+            // core.debug('wrote level.dat')
+            core.debug(`world_behavior_packs: ${JSON.stringify(pack_data)}`);
+            yield fs_1.promises.writeFile(path.join(process.cwd(), inputs_1.BDS_PATH, WORLDS_PATH, WORLD_NAME, WORLD_BEHAVIOR_PACKS_FILE), JSON.stringify(pack_data), {
+                flag: 'w'
+            });
+            core.debug('wrote world_behavior_packs.json');
+            yield fs_1.promises.writeFile(path.join(process.cwd(), inputs_1.BDS_PATH, 'config', 'default', 'permissions.json'), JSON.stringify({
+                allowed_modules: ['*']
+            }), {
+                flag: 'w'
+            });
+            core.debug('wrote permissions.json');
+            core.endGroup();
             yield core.group('Run bedrock server', () => __awaiter(this, void 0, void 0, function* () {
-                yield exec.exec('bedrock_server', [], {
-                    cwd: inputs_1.BDS_PATH
+                yield exec.exec(path.join(process.cwd(), inputs_1.BDS_PATH, 'bedrock_server'), [], {
+                    cwd: path.join(process.cwd(), inputs_1.BDS_PATH)
                 });
             }));
+            let results = JSON.parse(yield fs_1.promises.readFile(path.join(process.cwd(), inputs_1.BDS_PATH, LOG_PATH, TEST_RESULTS_FILE), 'utf8'));
+            core.info(JSON.stringify(results));
             core.summary.addHeading('Test results');
+            core.summary.addTable([
+                [
+                    { data: 'Unique', header: true },
+                    { data: ':green_circle: <br /> Passed', header: true },
+                    { data: ':red_circle: <br /> Failed', header: true },
+                    { data: 'Total Run', header: true }
+                ],
+                [
+                    { data: `${results.unique}` },
+                    { data: `${results.passed}` },
+                    { data: `${results.failed}` },
+                    { data: `${results.totalRun}` }
+                ]
+            ]);
+            const test_groups = new Set();
+            results.results.forEach(r => {
+                const test_group = r.name.split(':')[0];
+                core.info(`Got ${test_group}`);
+                test_groups.add(test_group);
+            });
+            core.summary.addCodeBlock(JSON.stringify(test_groups.entries()));
+            results.results.sort((a, b) => {
+                if (a.name === b.name) {
+                    if (a.iteration < b.iteration) {
+                        return -1;
+                    }
+                    else {
+                        return 1;
+                    }
+                }
+                else if (a.name < b.name) {
+                    return -1;
+                }
+                else {
+                    return 1;
+                }
+            });
+            const rows = new Array();
+            rows.push([
+                { data: `Test`, header: true },
+                { data: `Result`, header: true },
+                { data: `Iteration`, header: true },
+                { data: `Duration`, header: true },
+                { data: `Error`, header: true }
+            ]);
+            for (const r of results.results) {
+                let icon;
+                switch (r.result) {
+                    case 'passed':
+                        icon = ':green_circle:';
+                        break;
+                    case 'failed':
+                        icon = ':red_circle:';
+                        break;
+                }
+                const startTime = new Date(r.startTime);
+                const endTime = new Date(r.endTime);
+                rows.push([
+                    { data: `${r.name}` },
+                    { data: `${icon} ${r.result}` },
+                    { data: `${r.iteration}` },
+                    { data: `${(endTime.getTime() - startTime.getTime()) / 1000}s` },
+                    { data: `${r.error}` }
+                ]);
+            }
+            core.summary.addTable(rows);
             const globber = yield glob.create(path.join(process.cwd(), inputs_1.BDS_PATH, 'ContentLog__*'));
             try {
-                for (var _b = __asyncValues(globber.globGenerator()), _c; _c = yield _b.next(), !_c.done;) {
-                    const cl = _c.value;
-                    const flbuf = yield (0, promises_1.readFile)(cl, 'utf8');
-                    core.summary.addSeparator();
-                    core.summary.addHeading(cl);
-                    core.summary.addCodeBlock(flbuf);
+                for (var _d = true, _e = __asyncValues(globber.globGenerator()), _f; _f = yield _e.next(), _a = _f.done, !_a;) {
+                    _c = _f.value;
+                    _d = false;
+                    try {
+                        const cl = _c;
+                        const flbuf = yield (0, promises_1.readFile)(cl, 'utf8');
+                        core.summary.addSeparator();
+                        core.summary.addHeading(cl);
+                        core.summary.addCodeBlock(flbuf);
+                    }
+                    finally {
+                        _d = true;
+                    }
                 }
             }
             catch (e_1_1) { e_1 = { error: e_1_1 }; }
             finally {
                 try {
-                    if (_c && !_c.done && (_a = _b.return)) yield _a.call(_b);
+                    if (!_d && !_a && (_b = _e.return)) yield _b.call(_e);
                 }
                 finally { if (e_1) throw e_1.error; }
             }
@@ -104,7 +383,11 @@ run();
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
 }) : (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
@@ -122,9 +405,98 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.BDS_PATH = void 0;
+exports.TEST_TAGS = exports.PACKS = exports.MAX_TESTS_PER_BATCH = exports.AUTOMATION_REPEAT_FAILURES_ONLY = exports.AUTOMATION_REPEAT_COUNT = exports.TIMEOUT_TICKS = exports.BDS_PATH = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 exports.BDS_PATH = core.getInput('BDS_PATH', { required: true });
+exports.TIMEOUT_TICKS = Number(core.getInput('TIMEOUT_TICKS', {
+    required: true
+}));
+exports.AUTOMATION_REPEAT_COUNT = Number(core.getInput('AUTOMATION_REPEAT_COUNT', {
+    required: true
+}));
+exports.AUTOMATION_REPEAT_FAILURES_ONLY = core.getBooleanInput('AUTOMATION_REPEAT_FAILURES_ONLY', {
+    required: true
+});
+exports.MAX_TESTS_PER_BATCH = Number(core.getInput('MAX_TESTS_PER_BATCH', {
+    required: true
+}));
+exports.PACKS = core.getMultilineInput('PACKS');
+exports.TEST_TAGS = core.getMultilineInput('TEST_TAGS');
+
+
+/***/ }),
+
+/***/ 9074:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.STRUCTURE_BYTES = void 0;
+// STRUCTURE_BYTES represents an absolutely minimal mcstructure file in NBT
+// Here's a json representation
+// {
+//     "name": "",
+//     "value": {
+//         "format_version": {
+//             "type": "int",
+//             "value": 1
+//         },
+//         "size": {
+//             "type": "list",
+//             "value": {"type":"int","value":[1,1,1]}
+//         },
+//         "structure": {
+//             "type": "compound",
+//             "value": {"block_indices":{"type":"list","value":{"type":"list","value":[{"type":"int","value":[0]},{"type":"int","value":[-1]}]}},"entities":{"type":"list","value":{"type":"end","value":[]}},"palette":{"type":"compound","value":{"default":{"type":"compound","value":{"block_palette":{"type":"list","value":{"type":"compound","value":[{"name":{"type":"string","value":"minecraft:air"},"states":{"type":"compound","value":{}},"version":{"type":"int","value":17825808}}]}},"block_position_data":{"type":"compound","value":{}}}}}}}
+//         },
+//         "structure_world_origin": {
+//             "type": "list",
+//             "value": {"type":"int","value":[180,4,-182]}
+//         }
+//     }
+// }
+exports.STRUCTURE_BYTES = new Uint8Array([
+    0x0a, 0x00, 0x00, 0x03, 0x0e, 0x00, 0x66, 0x6f, 0x72, 0x6d, 0x61, 0x74, 0x5f,
+    0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x01, 0x00, 0x00, 0x00, 0x09, 0x04,
+    0x00, 0x73, 0x69, 0x7a, 0x65, 0x03, 0x03, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00,
+    0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x0a, 0x09, 0x00, 0x73,
+    0x74, 0x72, 0x75, 0x63, 0x74, 0x75, 0x72, 0x65, 0x09, 0x0d, 0x00, 0x62, 0x6c,
+    0x6f, 0x63, 0x6b, 0x5f, 0x69, 0x6e, 0x64, 0x69, 0x63, 0x65, 0x73, 0x09, 0x02,
+    0x00, 0x00, 0x00, 0x03, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03,
+    0x01, 0x00, 0x00, 0x00, 0xff, 0xff, 0xff, 0xff, 0x09, 0x08, 0x00, 0x65, 0x6e,
+    0x74, 0x69, 0x74, 0x69, 0x65, 0x73, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0a, 0x07,
+    0x00, 0x70, 0x61, 0x6c, 0x65, 0x74, 0x74, 0x65, 0x0a, 0x07, 0x00, 0x64, 0x65,
+    0x66, 0x61, 0x75, 0x6c, 0x74, 0x09, 0x0d, 0x00, 0x62, 0x6c, 0x6f, 0x63, 0x6b,
+    0x5f, 0x70, 0x61, 0x6c, 0x65, 0x74, 0x74, 0x65, 0x0a, 0x01, 0x00, 0x00, 0x00,
+    0x08, 0x04, 0x00, 0x6e, 0x61, 0x6d, 0x65, 0x0d, 0x00, 0x6d, 0x69, 0x6e, 0x65,
+    0x63, 0x72, 0x61, 0x66, 0x74, 0x3a, 0x61, 0x69, 0x72, 0x0a, 0x06, 0x00, 0x73,
+    0x74, 0x61, 0x74, 0x65, 0x73, 0x00, 0x03, 0x07, 0x00, 0x76, 0x65, 0x72, 0x73,
+    0x69, 0x6f, 0x6e, 0x10, 0x00, 0x10, 0x01, 0x00, 0x0a, 0x13, 0x00, 0x62, 0x6c,
+    0x6f, 0x63, 0x6b, 0x5f, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x5f,
+    0x64, 0x61, 0x74, 0x61, 0x00, 0x00, 0x00, 0x00, 0x09, 0x16, 0x00, 0x73, 0x74,
+    0x72, 0x75, 0x63, 0x74, 0x75, 0x72, 0x65, 0x5f, 0x77, 0x6f, 0x72, 0x6c, 0x64,
+    0x5f, 0x6f, 0x72, 0x69, 0x67, 0x69, 0x6e, 0x03, 0x03, 0x00, 0x00, 0x00, 0xb4,
+    0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x4a, 0xff, 0xff, 0xff, 0x00
+]);
+
+
+/***/ }),
+
+/***/ 1353:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SERVER_PROPERTIES = void 0;
+exports.SERVER_PROPERTIES = `server-name=Dedicated Server
+difficulty=peaceful
+allow-cheats=true
+level-name=Bedrock level
+content-log-file-enabled=true
+enable-script=true
+level-type=FLAT`;
 
 
 /***/ }),
@@ -155,7 +527,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.issue = exports.issueCommand = void 0;
-const os = __importStar(__nccwpck_require__(2087));
+const os = __importStar(__nccwpck_require__(2037));
 const utils_1 = __nccwpck_require__(5278);
 /**
  * Commands
@@ -266,8 +638,8 @@ exports.getIDToken = exports.getState = exports.saveState = exports.group = expo
 const command_1 = __nccwpck_require__(7351);
 const file_command_1 = __nccwpck_require__(717);
 const utils_1 = __nccwpck_require__(5278);
-const os = __importStar(__nccwpck_require__(2087));
-const path = __importStar(__nccwpck_require__(5622));
+const os = __importStar(__nccwpck_require__(2037));
+const path = __importStar(__nccwpck_require__(1017));
 const oidc_utils_1 = __nccwpck_require__(8041);
 /**
  * The code to exit an action
@@ -600,9 +972,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.prepareKeyValueMessage = exports.issueFileCommand = void 0;
 // We use any as a valid input type
 /* eslint-disable @typescript-eslint/no-explicit-any */
-const fs = __importStar(__nccwpck_require__(5747));
-const os = __importStar(__nccwpck_require__(2087));
-const uuid_1 = __nccwpck_require__(5840);
+const fs = __importStar(__nccwpck_require__(7147));
+const os = __importStar(__nccwpck_require__(2037));
+const uuid_1 = __nccwpck_require__(8974);
 const utils_1 = __nccwpck_require__(5278);
 function issueFileCommand(command, message) {
     const filePath = process.env[`GITHUB_${command}`];
@@ -746,7 +1118,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.toPlatformPath = exports.toWin32Path = exports.toPosixPath = void 0;
-const path = __importStar(__nccwpck_require__(5622));
+const path = __importStar(__nccwpck_require__(1017));
 /**
  * toPosixPath converts the given path to the posix form. On Windows, \\ will be
  * replaced with /.
@@ -801,8 +1173,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.summary = exports.markdownSummary = exports.SUMMARY_DOCS_URL = exports.SUMMARY_ENV_VAR = void 0;
-const os_1 = __nccwpck_require__(2087);
-const fs_1 = __nccwpck_require__(5747);
+const os_1 = __nccwpck_require__(2037);
+const fs_1 = __nccwpck_require__(7147);
 const { access, appendFile, writeFile } = fs_1.promises;
 exports.SUMMARY_ENV_VAR = 'GITHUB_STEP_SUMMARY';
 exports.SUMMARY_DOCS_URL = 'https://docs.github.com/actions/using-workflows/workflow-commands-for-github-actions#adding-a-job-summary';
@@ -1122,6 +1494,652 @@ exports.toCommandProperties = toCommandProperties;
 
 /***/ }),
 
+/***/ 8974:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+Object.defineProperty(exports, "v1", ({
+  enumerable: true,
+  get: function () {
+    return _v.default;
+  }
+}));
+Object.defineProperty(exports, "v3", ({
+  enumerable: true,
+  get: function () {
+    return _v2.default;
+  }
+}));
+Object.defineProperty(exports, "v4", ({
+  enumerable: true,
+  get: function () {
+    return _v3.default;
+  }
+}));
+Object.defineProperty(exports, "v5", ({
+  enumerable: true,
+  get: function () {
+    return _v4.default;
+  }
+}));
+Object.defineProperty(exports, "NIL", ({
+  enumerable: true,
+  get: function () {
+    return _nil.default;
+  }
+}));
+Object.defineProperty(exports, "version", ({
+  enumerable: true,
+  get: function () {
+    return _version.default;
+  }
+}));
+Object.defineProperty(exports, "validate", ({
+  enumerable: true,
+  get: function () {
+    return _validate.default;
+  }
+}));
+Object.defineProperty(exports, "stringify", ({
+  enumerable: true,
+  get: function () {
+    return _stringify.default;
+  }
+}));
+Object.defineProperty(exports, "parse", ({
+  enumerable: true,
+  get: function () {
+    return _parse.default;
+  }
+}));
+
+var _v = _interopRequireDefault(__nccwpck_require__(1595));
+
+var _v2 = _interopRequireDefault(__nccwpck_require__(6993));
+
+var _v3 = _interopRequireDefault(__nccwpck_require__(1472));
+
+var _v4 = _interopRequireDefault(__nccwpck_require__(6217));
+
+var _nil = _interopRequireDefault(__nccwpck_require__(2381));
+
+var _version = _interopRequireDefault(__nccwpck_require__(427));
+
+var _validate = _interopRequireDefault(__nccwpck_require__(2609));
+
+var _stringify = _interopRequireDefault(__nccwpck_require__(1458));
+
+var _parse = _interopRequireDefault(__nccwpck_require__(6385));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/***/ }),
+
+/***/ 5842:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+
+var _crypto = _interopRequireDefault(__nccwpck_require__(6113));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function md5(bytes) {
+  if (Array.isArray(bytes)) {
+    bytes = Buffer.from(bytes);
+  } else if (typeof bytes === 'string') {
+    bytes = Buffer.from(bytes, 'utf8');
+  }
+
+  return _crypto.default.createHash('md5').update(bytes).digest();
+}
+
+var _default = md5;
+exports["default"] = _default;
+
+/***/ }),
+
+/***/ 2381:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+var _default = '00000000-0000-0000-0000-000000000000';
+exports["default"] = _default;
+
+/***/ }),
+
+/***/ 6385:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+
+var _validate = _interopRequireDefault(__nccwpck_require__(2609));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function parse(uuid) {
+  if (!(0, _validate.default)(uuid)) {
+    throw TypeError('Invalid UUID');
+  }
+
+  let v;
+  const arr = new Uint8Array(16); // Parse ########-....-....-....-............
+
+  arr[0] = (v = parseInt(uuid.slice(0, 8), 16)) >>> 24;
+  arr[1] = v >>> 16 & 0xff;
+  arr[2] = v >>> 8 & 0xff;
+  arr[3] = v & 0xff; // Parse ........-####-....-....-............
+
+  arr[4] = (v = parseInt(uuid.slice(9, 13), 16)) >>> 8;
+  arr[5] = v & 0xff; // Parse ........-....-####-....-............
+
+  arr[6] = (v = parseInt(uuid.slice(14, 18), 16)) >>> 8;
+  arr[7] = v & 0xff; // Parse ........-....-....-####-............
+
+  arr[8] = (v = parseInt(uuid.slice(19, 23), 16)) >>> 8;
+  arr[9] = v & 0xff; // Parse ........-....-....-....-############
+  // (Use "/" to avoid 32-bit truncation when bit-shifting high-order bytes)
+
+  arr[10] = (v = parseInt(uuid.slice(24, 36), 16)) / 0x10000000000 & 0xff;
+  arr[11] = v / 0x100000000 & 0xff;
+  arr[12] = v >>> 24 & 0xff;
+  arr[13] = v >>> 16 & 0xff;
+  arr[14] = v >>> 8 & 0xff;
+  arr[15] = v & 0xff;
+  return arr;
+}
+
+var _default = parse;
+exports["default"] = _default;
+
+/***/ }),
+
+/***/ 6230:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+var _default = /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|00000000-0000-0000-0000-000000000000)$/i;
+exports["default"] = _default;
+
+/***/ }),
+
+/***/ 9784:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = rng;
+
+var _crypto = _interopRequireDefault(__nccwpck_require__(6113));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+const rnds8Pool = new Uint8Array(256); // # of random values to pre-allocate
+
+let poolPtr = rnds8Pool.length;
+
+function rng() {
+  if (poolPtr > rnds8Pool.length - 16) {
+    _crypto.default.randomFillSync(rnds8Pool);
+
+    poolPtr = 0;
+  }
+
+  return rnds8Pool.slice(poolPtr, poolPtr += 16);
+}
+
+/***/ }),
+
+/***/ 8844:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+
+var _crypto = _interopRequireDefault(__nccwpck_require__(6113));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function sha1(bytes) {
+  if (Array.isArray(bytes)) {
+    bytes = Buffer.from(bytes);
+  } else if (typeof bytes === 'string') {
+    bytes = Buffer.from(bytes, 'utf8');
+  }
+
+  return _crypto.default.createHash('sha1').update(bytes).digest();
+}
+
+var _default = sha1;
+exports["default"] = _default;
+
+/***/ }),
+
+/***/ 1458:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+
+var _validate = _interopRequireDefault(__nccwpck_require__(2609));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * Convert array of 16 byte values to UUID string format of the form:
+ * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+ */
+const byteToHex = [];
+
+for (let i = 0; i < 256; ++i) {
+  byteToHex.push((i + 0x100).toString(16).substr(1));
+}
+
+function stringify(arr, offset = 0) {
+  // Note: Be careful editing this code!  It's been tuned for performance
+  // and works in ways you may not expect. See https://github.com/uuidjs/uuid/pull/434
+  const uuid = (byteToHex[arr[offset + 0]] + byteToHex[arr[offset + 1]] + byteToHex[arr[offset + 2]] + byteToHex[arr[offset + 3]] + '-' + byteToHex[arr[offset + 4]] + byteToHex[arr[offset + 5]] + '-' + byteToHex[arr[offset + 6]] + byteToHex[arr[offset + 7]] + '-' + byteToHex[arr[offset + 8]] + byteToHex[arr[offset + 9]] + '-' + byteToHex[arr[offset + 10]] + byteToHex[arr[offset + 11]] + byteToHex[arr[offset + 12]] + byteToHex[arr[offset + 13]] + byteToHex[arr[offset + 14]] + byteToHex[arr[offset + 15]]).toLowerCase(); // Consistency check for valid UUID.  If this throws, it's likely due to one
+  // of the following:
+  // - One or more input array values don't map to a hex octet (leading to
+  // "undefined" in the uuid)
+  // - Invalid input values for the RFC `version` or `variant` fields
+
+  if (!(0, _validate.default)(uuid)) {
+    throw TypeError('Stringified UUID is invalid');
+  }
+
+  return uuid;
+}
+
+var _default = stringify;
+exports["default"] = _default;
+
+/***/ }),
+
+/***/ 1595:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+
+var _rng = _interopRequireDefault(__nccwpck_require__(9784));
+
+var _stringify = _interopRequireDefault(__nccwpck_require__(1458));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// **`v1()` - Generate time-based UUID**
+//
+// Inspired by https://github.com/LiosK/UUID.js
+// and http://docs.python.org/library/uuid.html
+let _nodeId;
+
+let _clockseq; // Previous uuid creation time
+
+
+let _lastMSecs = 0;
+let _lastNSecs = 0; // See https://github.com/uuidjs/uuid for API details
+
+function v1(options, buf, offset) {
+  let i = buf && offset || 0;
+  const b = buf || new Array(16);
+  options = options || {};
+  let node = options.node || _nodeId;
+  let clockseq = options.clockseq !== undefined ? options.clockseq : _clockseq; // node and clockseq need to be initialized to random values if they're not
+  // specified.  We do this lazily to minimize issues related to insufficient
+  // system entropy.  See #189
+
+  if (node == null || clockseq == null) {
+    const seedBytes = options.random || (options.rng || _rng.default)();
+
+    if (node == null) {
+      // Per 4.5, create and 48-bit node id, (47 random bits + multicast bit = 1)
+      node = _nodeId = [seedBytes[0] | 0x01, seedBytes[1], seedBytes[2], seedBytes[3], seedBytes[4], seedBytes[5]];
+    }
+
+    if (clockseq == null) {
+      // Per 4.2.2, randomize (14 bit) clockseq
+      clockseq = _clockseq = (seedBytes[6] << 8 | seedBytes[7]) & 0x3fff;
+    }
+  } // UUID timestamps are 100 nano-second units since the Gregorian epoch,
+  // (1582-10-15 00:00).  JSNumbers aren't precise enough for this, so
+  // time is handled internally as 'msecs' (integer milliseconds) and 'nsecs'
+  // (100-nanoseconds offset from msecs) since unix epoch, 1970-01-01 00:00.
+
+
+  let msecs = options.msecs !== undefined ? options.msecs : Date.now(); // Per 4.2.1.2, use count of uuid's generated during the current clock
+  // cycle to simulate higher resolution clock
+
+  let nsecs = options.nsecs !== undefined ? options.nsecs : _lastNSecs + 1; // Time since last uuid creation (in msecs)
+
+  const dt = msecs - _lastMSecs + (nsecs - _lastNSecs) / 10000; // Per 4.2.1.2, Bump clockseq on clock regression
+
+  if (dt < 0 && options.clockseq === undefined) {
+    clockseq = clockseq + 1 & 0x3fff;
+  } // Reset nsecs if clock regresses (new clockseq) or we've moved onto a new
+  // time interval
+
+
+  if ((dt < 0 || msecs > _lastMSecs) && options.nsecs === undefined) {
+    nsecs = 0;
+  } // Per 4.2.1.2 Throw error if too many uuids are requested
+
+
+  if (nsecs >= 10000) {
+    throw new Error("uuid.v1(): Can't create more than 10M uuids/sec");
+  }
+
+  _lastMSecs = msecs;
+  _lastNSecs = nsecs;
+  _clockseq = clockseq; // Per 4.1.4 - Convert from unix epoch to Gregorian epoch
+
+  msecs += 12219292800000; // `time_low`
+
+  const tl = ((msecs & 0xfffffff) * 10000 + nsecs) % 0x100000000;
+  b[i++] = tl >>> 24 & 0xff;
+  b[i++] = tl >>> 16 & 0xff;
+  b[i++] = tl >>> 8 & 0xff;
+  b[i++] = tl & 0xff; // `time_mid`
+
+  const tmh = msecs / 0x100000000 * 10000 & 0xfffffff;
+  b[i++] = tmh >>> 8 & 0xff;
+  b[i++] = tmh & 0xff; // `time_high_and_version`
+
+  b[i++] = tmh >>> 24 & 0xf | 0x10; // include version
+
+  b[i++] = tmh >>> 16 & 0xff; // `clock_seq_hi_and_reserved` (Per 4.2.2 - include variant)
+
+  b[i++] = clockseq >>> 8 | 0x80; // `clock_seq_low`
+
+  b[i++] = clockseq & 0xff; // `node`
+
+  for (let n = 0; n < 6; ++n) {
+    b[i + n] = node[n];
+  }
+
+  return buf || (0, _stringify.default)(b);
+}
+
+var _default = v1;
+exports["default"] = _default;
+
+/***/ }),
+
+/***/ 6993:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+
+var _v = _interopRequireDefault(__nccwpck_require__(5920));
+
+var _md = _interopRequireDefault(__nccwpck_require__(5842));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+const v3 = (0, _v.default)('v3', 0x30, _md.default);
+var _default = v3;
+exports["default"] = _default;
+
+/***/ }),
+
+/***/ 5920:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = _default;
+exports.URL = exports.DNS = void 0;
+
+var _stringify = _interopRequireDefault(__nccwpck_require__(1458));
+
+var _parse = _interopRequireDefault(__nccwpck_require__(6385));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function stringToBytes(str) {
+  str = unescape(encodeURIComponent(str)); // UTF8 escape
+
+  const bytes = [];
+
+  for (let i = 0; i < str.length; ++i) {
+    bytes.push(str.charCodeAt(i));
+  }
+
+  return bytes;
+}
+
+const DNS = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
+exports.DNS = DNS;
+const URL = '6ba7b811-9dad-11d1-80b4-00c04fd430c8';
+exports.URL = URL;
+
+function _default(name, version, hashfunc) {
+  function generateUUID(value, namespace, buf, offset) {
+    if (typeof value === 'string') {
+      value = stringToBytes(value);
+    }
+
+    if (typeof namespace === 'string') {
+      namespace = (0, _parse.default)(namespace);
+    }
+
+    if (namespace.length !== 16) {
+      throw TypeError('Namespace must be array-like (16 iterable integer values, 0-255)');
+    } // Compute hash of namespace and value, Per 4.3
+    // Future: Use spread syntax when supported on all platforms, e.g. `bytes =
+    // hashfunc([...namespace, ... value])`
+
+
+    let bytes = new Uint8Array(16 + value.length);
+    bytes.set(namespace);
+    bytes.set(value, namespace.length);
+    bytes = hashfunc(bytes);
+    bytes[6] = bytes[6] & 0x0f | version;
+    bytes[8] = bytes[8] & 0x3f | 0x80;
+
+    if (buf) {
+      offset = offset || 0;
+
+      for (let i = 0; i < 16; ++i) {
+        buf[offset + i] = bytes[i];
+      }
+
+      return buf;
+    }
+
+    return (0, _stringify.default)(bytes);
+  } // Function#name is not settable on some platforms (#270)
+
+
+  try {
+    generateUUID.name = name; // eslint-disable-next-line no-empty
+  } catch (err) {} // For CommonJS default export support
+
+
+  generateUUID.DNS = DNS;
+  generateUUID.URL = URL;
+  return generateUUID;
+}
+
+/***/ }),
+
+/***/ 1472:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+
+var _rng = _interopRequireDefault(__nccwpck_require__(9784));
+
+var _stringify = _interopRequireDefault(__nccwpck_require__(1458));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function v4(options, buf, offset) {
+  options = options || {};
+
+  const rnds = options.random || (options.rng || _rng.default)(); // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
+
+
+  rnds[6] = rnds[6] & 0x0f | 0x40;
+  rnds[8] = rnds[8] & 0x3f | 0x80; // Copy bytes to buffer, if provided
+
+  if (buf) {
+    offset = offset || 0;
+
+    for (let i = 0; i < 16; ++i) {
+      buf[offset + i] = rnds[i];
+    }
+
+    return buf;
+  }
+
+  return (0, _stringify.default)(rnds);
+}
+
+var _default = v4;
+exports["default"] = _default;
+
+/***/ }),
+
+/***/ 6217:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+
+var _v = _interopRequireDefault(__nccwpck_require__(5920));
+
+var _sha = _interopRequireDefault(__nccwpck_require__(8844));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+const v5 = (0, _v.default)('v5', 0x50, _sha.default);
+var _default = v5;
+exports["default"] = _default;
+
+/***/ }),
+
+/***/ 2609:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+
+var _regex = _interopRequireDefault(__nccwpck_require__(6230));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function validate(uuid) {
+  return typeof uuid === 'string' && _regex.default.test(uuid);
+}
+
+var _default = validate;
+exports["default"] = _default;
+
+/***/ }),
+
+/***/ 427:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+
+var _validate = _interopRequireDefault(__nccwpck_require__(2609));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function version(uuid) {
+  if (!(0, _validate.default)(uuid)) {
+    throw TypeError('Invalid UUID');
+  }
+
+  return parseInt(uuid.substr(14, 1), 16);
+}
+
+var _default = version;
+exports["default"] = _default;
+
+/***/ }),
+
 /***/ 1514:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -1157,7 +2175,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getExecOutput = exports.exec = void 0;
-const string_decoder_1 = __nccwpck_require__(4304);
+const string_decoder_1 = __nccwpck_require__(1576);
 const tr = __importStar(__nccwpck_require__(8159));
 /**
  * Exec a command.
@@ -1267,13 +2285,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.argStringToArray = exports.ToolRunner = void 0;
-const os = __importStar(__nccwpck_require__(2087));
-const events = __importStar(__nccwpck_require__(8614));
-const child = __importStar(__nccwpck_require__(3129));
-const path = __importStar(__nccwpck_require__(5622));
+const os = __importStar(__nccwpck_require__(2037));
+const events = __importStar(__nccwpck_require__(2361));
+const child = __importStar(__nccwpck_require__(2081));
+const path = __importStar(__nccwpck_require__(1017));
 const io = __importStar(__nccwpck_require__(7436));
 const ioUtil = __importStar(__nccwpck_require__(1962));
-const timers_1 = __nccwpck_require__(8213);
+const timers_1 = __nccwpck_require__(9512);
 /* eslint-disable @typescript-eslint/unbound-method */
 const IS_WINDOWS = process.platform === 'win32';
 /*
@@ -1891,18 +2909,16 @@ exports.create = create;
  * Computes the sha256 hash of a glob
  *
  * @param patterns  Patterns separated by newlines
- * @param currentWorkspace  Workspace used when matching files
  * @param options   Glob options
- * @param verbose   Enables verbose logging
  */
-function hashFiles(patterns, currentWorkspace = '', options, verbose = false) {
+function hashFiles(patterns, options, verbose = false) {
     return __awaiter(this, void 0, void 0, function* () {
         let followSymbolicLinks = true;
         if (options && typeof options.followSymbolicLinks === 'boolean') {
             followSymbolicLinks = options.followSymbolicLinks;
         }
         const globber = yield create(patterns, { followSymbolicLinks });
-        return internal_hash_files_1.hashFiles(globber, currentWorkspace, verbose);
+        return internal_hash_files_1.hashFiles(globber, verbose);
     });
 }
 exports.hashFiles = hashFiles;
@@ -2027,9 +3043,9 @@ var __asyncGenerator = (this && this.__asyncGenerator) || function (thisArg, _ar
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DefaultGlobber = void 0;
 const core = __importStar(__nccwpck_require__(2186));
-const fs = __importStar(__nccwpck_require__(5747));
+const fs = __importStar(__nccwpck_require__(7147));
 const globOptionsHelper = __importStar(__nccwpck_require__(1026));
-const path = __importStar(__nccwpck_require__(5622));
+const path = __importStar(__nccwpck_require__(1017));
 const patternHelper = __importStar(__nccwpck_require__(9005));
 const internal_match_kind_1 = __nccwpck_require__(1063);
 const internal_pattern_1 = __nccwpck_require__(4536);
@@ -2256,21 +3272,19 @@ var __asyncValues = (this && this.__asyncValues) || function (o) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.hashFiles = void 0;
-const crypto = __importStar(__nccwpck_require__(6417));
+const crypto = __importStar(__nccwpck_require__(6113));
 const core = __importStar(__nccwpck_require__(2186));
-const fs = __importStar(__nccwpck_require__(5747));
-const stream = __importStar(__nccwpck_require__(2413));
-const util = __importStar(__nccwpck_require__(1669));
-const path = __importStar(__nccwpck_require__(5622));
-function hashFiles(globber, currentWorkspace, verbose = false) {
+const fs = __importStar(__nccwpck_require__(7147));
+const stream = __importStar(__nccwpck_require__(2781));
+const util = __importStar(__nccwpck_require__(3837));
+const path = __importStar(__nccwpck_require__(1017));
+function hashFiles(globber, verbose = false) {
     var e_1, _a;
     var _b;
     return __awaiter(this, void 0, void 0, function* () {
         const writeDelegate = verbose ? core.info : core.debug;
         let hasMatch = false;
-        const githubWorkspace = currentWorkspace
-            ? currentWorkspace
-            : (_b = process.env['GITHUB_WORKSPACE']) !== null && _b !== void 0 ? _b : process.cwd();
+        const githubWorkspace = (_b = process.env['GITHUB_WORKSPACE']) !== null && _b !== void 0 ? _b : process.cwd();
         const result = crypto.createHash('sha256');
         let count = 0;
         try {
@@ -2372,8 +3386,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.safeTrimTrailingSeparator = exports.normalizeSeparators = exports.hasRoot = exports.hasAbsoluteRoot = exports.ensureAbsoluteRoot = exports.dirname = void 0;
-const path = __importStar(__nccwpck_require__(5622));
-const assert_1 = __importDefault(__nccwpck_require__(2357));
+const path = __importStar(__nccwpck_require__(1017));
+const assert_1 = __importDefault(__nccwpck_require__(9491));
 const IS_WINDOWS = process.platform === 'win32';
 /**
  * Similar to path.dirname except normalizes the path separators and slightly better handling for Windows UNC paths.
@@ -2577,9 +3591,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Path = void 0;
-const path = __importStar(__nccwpck_require__(5622));
+const path = __importStar(__nccwpck_require__(1017));
 const pathHelper = __importStar(__nccwpck_require__(1849));
-const assert_1 = __importDefault(__nccwpck_require__(2357));
+const assert_1 = __importDefault(__nccwpck_require__(9491));
 const IS_WINDOWS = process.platform === 'win32';
 /**
  * Helper class for parsing paths into segments
@@ -2798,10 +3812,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Pattern = void 0;
-const os = __importStar(__nccwpck_require__(2087));
-const path = __importStar(__nccwpck_require__(5622));
+const os = __importStar(__nccwpck_require__(2037));
+const path = __importStar(__nccwpck_require__(1017));
 const pathHelper = __importStar(__nccwpck_require__(1849));
-const assert_1 = __importDefault(__nccwpck_require__(2357));
+const assert_1 = __importDefault(__nccwpck_require__(9491));
 const minimatch_1 = __nccwpck_require__(3973);
 const internal_match_kind_1 = __nccwpck_require__(1063);
 const internal_path_1 = __nccwpck_require__(6836);
@@ -3173,8 +4187,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.HttpClient = exports.isHttps = exports.HttpClientResponse = exports.HttpClientError = exports.getProxyUrl = exports.MediaTypes = exports.Headers = exports.HttpCodes = void 0;
-const http = __importStar(__nccwpck_require__(8605));
-const https = __importStar(__nccwpck_require__(7211));
+const http = __importStar(__nccwpck_require__(3685));
+const https = __importStar(__nccwpck_require__(5687));
 const pm = __importStar(__nccwpck_require__(9835));
 const tunnel = __importStar(__nccwpck_require__(4294));
 var HttpCodes;
@@ -3853,8 +4867,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getCmdPath = exports.tryGetExecutablePath = exports.isRooted = exports.isDirectory = exports.exists = exports.IS_WINDOWS = exports.unlink = exports.symlink = exports.stat = exports.rmdir = exports.rename = exports.readlink = exports.readdir = exports.mkdir = exports.lstat = exports.copyFile = exports.chmod = void 0;
-const fs = __importStar(__nccwpck_require__(5747));
-const path = __importStar(__nccwpck_require__(5622));
+const fs = __importStar(__nccwpck_require__(7147));
+const path = __importStar(__nccwpck_require__(1017));
 _a = fs.promises, exports.chmod = _a.chmod, exports.copyFile = _a.copyFile, exports.lstat = _a.lstat, exports.mkdir = _a.mkdir, exports.readdir = _a.readdir, exports.readlink = _a.readlink, exports.rename = _a.rename, exports.rmdir = _a.rmdir, exports.stat = _a.stat, exports.symlink = _a.symlink, exports.unlink = _a.unlink;
 exports.IS_WINDOWS = process.platform === 'win32';
 function exists(fsPath) {
@@ -4036,10 +5050,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.findInPath = exports.which = exports.mkdirP = exports.rmRF = exports.mv = exports.cp = void 0;
-const assert_1 = __nccwpck_require__(2357);
-const childProcess = __importStar(__nccwpck_require__(3129));
-const path = __importStar(__nccwpck_require__(5622));
-const util_1 = __nccwpck_require__(1669);
+const assert_1 = __nccwpck_require__(9491);
+const childProcess = __importStar(__nccwpck_require__(2081));
+const path = __importStar(__nccwpck_require__(1017));
+const util_1 = __nccwpck_require__(3837);
 const ioUtil = __importStar(__nccwpck_require__(1962));
 const exec = util_1.promisify(childProcess.exec);
 const execFile = util_1.promisify(childProcess.execFile);
@@ -4650,10 +5664,10 @@ var isArray = Array.isArray || function (xs) {
 module.exports = minimatch
 minimatch.Minimatch = Minimatch
 
-var path = { sep: '/' }
-try {
-  path = __nccwpck_require__(5622)
-} catch (er) {}
+var path = (function () { try { return __nccwpck_require__(1017) } catch (e) {}}()) || {
+  sep: '/'
+}
+minimatch.sep = path.sep
 
 var GLOBSTAR = minimatch.GLOBSTAR = Minimatch.GLOBSTAR = {}
 var expand = __nccwpck_require__(3717)
@@ -4705,43 +5719,64 @@ function filter (pattern, options) {
 }
 
 function ext (a, b) {
-  a = a || {}
   b = b || {}
   var t = {}
-  Object.keys(b).forEach(function (k) {
-    t[k] = b[k]
-  })
   Object.keys(a).forEach(function (k) {
     t[k] = a[k]
+  })
+  Object.keys(b).forEach(function (k) {
+    t[k] = b[k]
   })
   return t
 }
 
 minimatch.defaults = function (def) {
-  if (!def || !Object.keys(def).length) return minimatch
+  if (!def || typeof def !== 'object' || !Object.keys(def).length) {
+    return minimatch
+  }
 
   var orig = minimatch
 
   var m = function minimatch (p, pattern, options) {
-    return orig.minimatch(p, pattern, ext(def, options))
+    return orig(p, pattern, ext(def, options))
   }
 
   m.Minimatch = function Minimatch (pattern, options) {
     return new orig.Minimatch(pattern, ext(def, options))
+  }
+  m.Minimatch.defaults = function defaults (options) {
+    return orig.defaults(ext(def, options)).Minimatch
+  }
+
+  m.filter = function filter (pattern, options) {
+    return orig.filter(pattern, ext(def, options))
+  }
+
+  m.defaults = function defaults (options) {
+    return orig.defaults(ext(def, options))
+  }
+
+  m.makeRe = function makeRe (pattern, options) {
+    return orig.makeRe(pattern, ext(def, options))
+  }
+
+  m.braceExpand = function braceExpand (pattern, options) {
+    return orig.braceExpand(pattern, ext(def, options))
+  }
+
+  m.match = function (list, pattern, options) {
+    return orig.match(list, pattern, ext(def, options))
   }
 
   return m
 }
 
 Minimatch.defaults = function (def) {
-  if (!def || !Object.keys(def).length) return Minimatch
   return minimatch.defaults(def).Minimatch
 }
 
 function minimatch (p, pattern, options) {
-  if (typeof pattern !== 'string') {
-    throw new TypeError('glob pattern string required')
-  }
+  assertValidPattern(pattern)
 
   if (!options) options = {}
 
@@ -4749,9 +5784,6 @@ function minimatch (p, pattern, options) {
   if (!options.nocomment && pattern.charAt(0) === '#') {
     return false
   }
-
-  // "" only matches ""
-  if (pattern.trim() === '') return p === ''
 
   return new Minimatch(pattern, options).match(p)
 }
@@ -4761,15 +5793,14 @@ function Minimatch (pattern, options) {
     return new Minimatch(pattern, options)
   }
 
-  if (typeof pattern !== 'string') {
-    throw new TypeError('glob pattern string required')
-  }
+  assertValidPattern(pattern)
 
   if (!options) options = {}
+
   pattern = pattern.trim()
 
   // windows support: need to use /, not \
-  if (path.sep !== '/') {
+  if (!options.allowWindowsEscape && path.sep !== '/') {
     pattern = pattern.split(path.sep).join('/')
   }
 
@@ -4780,6 +5811,7 @@ function Minimatch (pattern, options) {
   this.negate = false
   this.comment = false
   this.empty = false
+  this.partial = !!options.partial
 
   // make the set of regexps etc.
   this.make()
@@ -4789,9 +5821,6 @@ Minimatch.prototype.debug = function () {}
 
 Minimatch.prototype.make = make
 function make () {
-  // don't do it more than once.
-  if (this._made) return
-
   var pattern = this.pattern
   var options = this.options
 
@@ -4811,7 +5840,7 @@ function make () {
   // step 2: expand braces
   var set = this.globSet = this.braceExpand()
 
-  if (options.debug) this.debug = console.error
+  if (options.debug) this.debug = function debug() { console.error.apply(console, arguments) }
 
   this.debug(this.pattern, set)
 
@@ -4891,17 +5920,27 @@ function braceExpand (pattern, options) {
   pattern = typeof pattern === 'undefined'
     ? this.pattern : pattern
 
-  if (typeof pattern === 'undefined') {
-    throw new TypeError('undefined pattern')
-  }
+  assertValidPattern(pattern)
 
-  if (options.nobrace ||
-    !pattern.match(/\{.*\}/)) {
+  // Thanks to Yeting Li <https://github.com/yetingli> for
+  // improving this regexp to avoid a ReDOS vulnerability.
+  if (options.nobrace || !/\{(?:(?!\{).)*\}/.test(pattern)) {
     // shortcut. no need to expand.
     return [pattern]
   }
 
   return expand(pattern)
+}
+
+var MAX_PATTERN_LENGTH = 1024 * 64
+var assertValidPattern = function (pattern) {
+  if (typeof pattern !== 'string') {
+    throw new TypeError('invalid pattern')
+  }
+
+  if (pattern.length > MAX_PATTERN_LENGTH) {
+    throw new TypeError('pattern is too long')
+  }
 }
 
 // parse a component of the expanded set.
@@ -4918,14 +5957,17 @@ function braceExpand (pattern, options) {
 Minimatch.prototype.parse = parse
 var SUBPARSE = {}
 function parse (pattern, isSub) {
-  if (pattern.length > 1024 * 64) {
-    throw new TypeError('pattern is too long')
-  }
+  assertValidPattern(pattern)
 
   var options = this.options
 
   // shortcuts
-  if (!options.noglobstar && pattern === '**') return GLOBSTAR
+  if (pattern === '**') {
+    if (!options.noglobstar)
+      return GLOBSTAR
+    else
+      pattern = '*'
+  }
   if (pattern === '') return ''
 
   var re = ''
@@ -4981,10 +6023,12 @@ function parse (pattern, isSub) {
     }
 
     switch (c) {
-      case '/':
+      /* istanbul ignore next */
+      case '/': {
         // completely not allowed, even escaped.
         // Should already be path-split by now.
         return false
+      }
 
       case '\\':
         clearStateChar()
@@ -5103,25 +6147,23 @@ function parse (pattern, isSub) {
 
         // handle the case where we left a class open.
         // "[z-a]" is valid, equivalent to "\[z-a\]"
-        if (inClass) {
-          // split where the last [ was, make sure we don't have
-          // an invalid re. if so, re-walk the contents of the
-          // would-be class to re-translate any characters that
-          // were passed through as-is
-          // TODO: It would probably be faster to determine this
-          // without a try/catch and a new RegExp, but it's tricky
-          // to do safely.  For now, this is safe and works.
-          var cs = pattern.substring(classStart + 1, i)
-          try {
-            RegExp('[' + cs + ']')
-          } catch (er) {
-            // not a valid class!
-            var sp = this.parse(cs, SUBPARSE)
-            re = re.substr(0, reClassStart) + '\\[' + sp[0] + '\\]'
-            hasMagic = hasMagic || sp[1]
-            inClass = false
-            continue
-          }
+        // split where the last [ was, make sure we don't have
+        // an invalid re. if so, re-walk the contents of the
+        // would-be class to re-translate any characters that
+        // were passed through as-is
+        // TODO: It would probably be faster to determine this
+        // without a try/catch and a new RegExp, but it's tricky
+        // to do safely.  For now, this is safe and works.
+        var cs = pattern.substring(classStart + 1, i)
+        try {
+          RegExp('[' + cs + ']')
+        } catch (er) {
+          // not a valid class!
+          var sp = this.parse(cs, SUBPARSE)
+          re = re.substr(0, reClassStart) + '\\[' + sp[0] + '\\]'
+          hasMagic = hasMagic || sp[1]
+          inClass = false
+          continue
         }
 
         // finish up the class.
@@ -5205,9 +6247,7 @@ function parse (pattern, isSub) {
   // something that could conceivably capture a dot
   var addPatternStart = false
   switch (re.charAt(0)) {
-    case '.':
-    case '[':
-    case '(': addPatternStart = true
+    case '[': case '.': case '(': addPatternStart = true
   }
 
   // Hack to work around lack of negative lookbehind in JS
@@ -5269,7 +6309,7 @@ function parse (pattern, isSub) {
   var flags = options.nocase ? 'i' : ''
   try {
     var regExp = new RegExp('^' + re + '$', flags)
-  } catch (er) {
+  } catch (er) /* istanbul ignore next - should be impossible */ {
     // If it was an invalid regular expression, then it can't match
     // anything.  This trick looks for a character after the end of
     // the string, which is of course impossible, except in multi-line
@@ -5327,7 +6367,7 @@ function makeRe () {
 
   try {
     this.regexp = new RegExp(re, flags)
-  } catch (ex) {
+  } catch (ex) /* istanbul ignore next - should be impossible */ {
     this.regexp = false
   }
   return this.regexp
@@ -5345,8 +6385,8 @@ minimatch.match = function (list, pattern, options) {
   return list
 }
 
-Minimatch.prototype.match = match
-function match (f, partial) {
+Minimatch.prototype.match = function match (f, partial) {
+  if (typeof partial === 'undefined') partial = this.partial
   this.debug('match', f, this.pattern)
   // short-circuit in the case of busted things.
   // comments, etc.
@@ -5428,6 +6468,7 @@ Minimatch.prototype.matchOne = function (file, pattern, partial) {
 
     // should be impossible.
     // some invalid regexp stuff in the set.
+    /* istanbul ignore if */
     if (p === false) return false
 
     if (p === GLOBSTAR) {
@@ -5501,6 +6542,7 @@ Minimatch.prototype.matchOne = function (file, pattern, partial) {
       // no match was found.
       // However, in partial mode, we can't say this is necessarily over.
       // If there's more *pattern* left, then
+      /* istanbul ignore if */
       if (partial) {
         // ran out of file
         this.debug('\n>>> no match, partial?', file, fr, pattern, pr)
@@ -5514,11 +6556,7 @@ Minimatch.prototype.matchOne = function (file, pattern, partial) {
     // patterns with magic have been turned into regexps.
     var hit
     if (typeof p === 'string') {
-      if (options.nocase) {
-        hit = f.toLowerCase() === p.toLowerCase()
-      } else {
-        hit = f === p
-      }
+      hit = f === p
       this.debug('string match', p, f, hit)
     } else {
       hit = f.match(p)
@@ -5549,16 +6587,16 @@ Minimatch.prototype.matchOne = function (file, pattern, partial) {
     // this is ok if we're doing the match as part of
     // a glob fs traversal.
     return partial
-  } else if (pi === pl) {
+  } else /* istanbul ignore else */ if (pi === pl) {
     // ran out of pattern, still have file left.
     // this is only acceptable if we're on the very last
     // empty segment of a file with a trailing slash.
     // a/* should match a/b/
-    var emptyFileEnd = (fi === fl - 1) && (file[fi] === '')
-    return emptyFileEnd
+    return (fi === fl - 1) && (file[fi] === '')
   }
 
   // should be unreachable.
+  /* istanbul ignore next */
   throw new Error('wtf?')
 }
 
@@ -5588,13 +6626,13 @@ module.exports = __nccwpck_require__(4219);
 "use strict";
 
 
-var net = __nccwpck_require__(1631);
-var tls = __nccwpck_require__(4016);
-var http = __nccwpck_require__(8605);
-var https = __nccwpck_require__(7211);
-var events = __nccwpck_require__(8614);
-var assert = __nccwpck_require__(2357);
-var util = __nccwpck_require__(1669);
+var net = __nccwpck_require__(1808);
+var tls = __nccwpck_require__(4404);
+var http = __nccwpck_require__(3685);
+var https = __nccwpck_require__(5687);
+var events = __nccwpck_require__(2361);
+var assert = __nccwpck_require__(9491);
+var util = __nccwpck_require__(3837);
 
 
 exports.httpOverHttp = httpOverHttp;
@@ -5863,6 +6901,24 @@ exports.debug = debug; // for test
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
+Object.defineProperty(exports, "NIL", ({
+  enumerable: true,
+  get: function () {
+    return _nil.default;
+  }
+}));
+Object.defineProperty(exports, "parse", ({
+  enumerable: true,
+  get: function () {
+    return _parse.default;
+  }
+}));
+Object.defineProperty(exports, "stringify", ({
+  enumerable: true,
+  get: function () {
+    return _stringify.default;
+  }
+}));
 Object.defineProperty(exports, "v1", ({
   enumerable: true,
   get: function () {
@@ -5887,34 +6943,16 @@ Object.defineProperty(exports, "v5", ({
     return _v4.default;
   }
 }));
-Object.defineProperty(exports, "NIL", ({
-  enumerable: true,
-  get: function () {
-    return _nil.default;
-  }
-}));
-Object.defineProperty(exports, "version", ({
-  enumerable: true,
-  get: function () {
-    return _version.default;
-  }
-}));
 Object.defineProperty(exports, "validate", ({
   enumerable: true,
   get: function () {
     return _validate.default;
   }
 }));
-Object.defineProperty(exports, "stringify", ({
+Object.defineProperty(exports, "version", ({
   enumerable: true,
   get: function () {
-    return _stringify.default;
-  }
-}));
-Object.defineProperty(exports, "parse", ({
-  enumerable: true,
-  get: function () {
-    return _parse.default;
+    return _version.default;
   }
 }));
 
@@ -5928,7 +6966,7 @@ var _v4 = _interopRequireDefault(__nccwpck_require__(9120));
 
 var _nil = _interopRequireDefault(__nccwpck_require__(5332));
 
-var _version = _interopRequireDefault(__nccwpck_require__(1595));
+var _version = _interopRequireDefault(__nccwpck_require__(2414));
 
 var _validate = _interopRequireDefault(__nccwpck_require__(6900));
 
@@ -5949,9 +6987,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.default = void 0;
+exports["default"] = void 0;
 
-var _crypto = _interopRequireDefault(__nccwpck_require__(6417));
+var _crypto = _interopRequireDefault(__nccwpck_require__(6113));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -5966,7 +7004,29 @@ function md5(bytes) {
 }
 
 var _default = md5;
-exports.default = _default;
+exports["default"] = _default;
+
+/***/ }),
+
+/***/ 2054:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+
+var _crypto = _interopRequireDefault(__nccwpck_require__(6113));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var _default = {
+  randomUUID: _crypto.default.randomUUID
+};
+exports["default"] = _default;
 
 /***/ }),
 
@@ -5979,9 +7039,9 @@ exports.default = _default;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.default = void 0;
+exports["default"] = void 0;
 var _default = '00000000-0000-0000-0000-000000000000';
-exports.default = _default;
+exports["default"] = _default;
 
 /***/ }),
 
@@ -5994,7 +7054,7 @@ exports.default = _default;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.default = void 0;
+exports["default"] = void 0;
 
 var _validate = _interopRequireDefault(__nccwpck_require__(6900));
 
@@ -6033,7 +7093,7 @@ function parse(uuid) {
 }
 
 var _default = parse;
-exports.default = _default;
+exports["default"] = _default;
 
 /***/ }),
 
@@ -6046,9 +7106,9 @@ exports.default = _default;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.default = void 0;
+exports["default"] = void 0;
 var _default = /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|00000000-0000-0000-0000-000000000000)$/i;
-exports.default = _default;
+exports["default"] = _default;
 
 /***/ }),
 
@@ -6061,9 +7121,9 @@ exports.default = _default;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.default = rng;
+exports["default"] = rng;
 
-var _crypto = _interopRequireDefault(__nccwpck_require__(6417));
+var _crypto = _interopRequireDefault(__nccwpck_require__(6113));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -6092,9 +7152,9 @@ function rng() {
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.default = void 0;
+exports["default"] = void 0;
 
-var _crypto = _interopRequireDefault(__nccwpck_require__(6417));
+var _crypto = _interopRequireDefault(__nccwpck_require__(6113));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -6109,7 +7169,7 @@ function sha1(bytes) {
 }
 
 var _default = sha1;
-exports.default = _default;
+exports["default"] = _default;
 
 /***/ }),
 
@@ -6122,7 +7182,8 @@ exports.default = _default;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.default = void 0;
+exports["default"] = void 0;
+exports.unsafeStringify = unsafeStringify;
 
 var _validate = _interopRequireDefault(__nccwpck_require__(6900));
 
@@ -6135,13 +7196,17 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 const byteToHex = [];
 
 for (let i = 0; i < 256; ++i) {
-  byteToHex.push((i + 0x100).toString(16).substr(1));
+  byteToHex.push((i + 0x100).toString(16).slice(1));
+}
+
+function unsafeStringify(arr, offset = 0) {
+  // Note: Be careful editing this code!  It's been tuned for performance
+  // and works in ways you may not expect. See https://github.com/uuidjs/uuid/pull/434
+  return (byteToHex[arr[offset + 0]] + byteToHex[arr[offset + 1]] + byteToHex[arr[offset + 2]] + byteToHex[arr[offset + 3]] + '-' + byteToHex[arr[offset + 4]] + byteToHex[arr[offset + 5]] + '-' + byteToHex[arr[offset + 6]] + byteToHex[arr[offset + 7]] + '-' + byteToHex[arr[offset + 8]] + byteToHex[arr[offset + 9]] + '-' + byteToHex[arr[offset + 10]] + byteToHex[arr[offset + 11]] + byteToHex[arr[offset + 12]] + byteToHex[arr[offset + 13]] + byteToHex[arr[offset + 14]] + byteToHex[arr[offset + 15]]).toLowerCase();
 }
 
 function stringify(arr, offset = 0) {
-  // Note: Be careful editing this code!  It's been tuned for performance
-  // and works in ways you may not expect. See https://github.com/uuidjs/uuid/pull/434
-  const uuid = (byteToHex[arr[offset + 0]] + byteToHex[arr[offset + 1]] + byteToHex[arr[offset + 2]] + byteToHex[arr[offset + 3]] + '-' + byteToHex[arr[offset + 4]] + byteToHex[arr[offset + 5]] + '-' + byteToHex[arr[offset + 6]] + byteToHex[arr[offset + 7]] + '-' + byteToHex[arr[offset + 8]] + byteToHex[arr[offset + 9]] + '-' + byteToHex[arr[offset + 10]] + byteToHex[arr[offset + 11]] + byteToHex[arr[offset + 12]] + byteToHex[arr[offset + 13]] + byteToHex[arr[offset + 14]] + byteToHex[arr[offset + 15]]).toLowerCase(); // Consistency check for valid UUID.  If this throws, it's likely due to one
+  const uuid = unsafeStringify(arr, offset); // Consistency check for valid UUID.  If this throws, it's likely due to one
   // of the following:
   // - One or more input array values don't map to a hex octet (leading to
   // "undefined" in the uuid)
@@ -6155,7 +7220,7 @@ function stringify(arr, offset = 0) {
 }
 
 var _default = stringify;
-exports.default = _default;
+exports["default"] = _default;
 
 /***/ }),
 
@@ -6168,11 +7233,11 @@ exports.default = _default;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.default = void 0;
+exports["default"] = void 0;
 
 var _rng = _interopRequireDefault(__nccwpck_require__(807));
 
-var _stringify = _interopRequireDefault(__nccwpck_require__(8950));
+var _stringify = __nccwpck_require__(8950);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -6265,11 +7330,11 @@ function v1(options, buf, offset) {
     b[i + n] = node[n];
   }
 
-  return buf || (0, _stringify.default)(b);
+  return buf || (0, _stringify.unsafeStringify)(b);
 }
 
 var _default = v1;
-exports.default = _default;
+exports["default"] = _default;
 
 /***/ }),
 
@@ -6282,7 +7347,7 @@ exports.default = _default;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.default = void 0;
+exports["default"] = void 0;
 
 var _v = _interopRequireDefault(__nccwpck_require__(5998));
 
@@ -6292,7 +7357,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 const v3 = (0, _v.default)('v3', 0x30, _md.default);
 var _default = v3;
-exports.default = _default;
+exports["default"] = _default;
 
 /***/ }),
 
@@ -6305,10 +7370,10 @@ exports.default = _default;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.default = _default;
 exports.URL = exports.DNS = void 0;
+exports["default"] = v35;
 
-var _stringify = _interopRequireDefault(__nccwpck_require__(8950));
+var _stringify = __nccwpck_require__(8950);
 
 var _parse = _interopRequireDefault(__nccwpck_require__(2746));
 
@@ -6331,8 +7396,10 @@ exports.DNS = DNS;
 const URL = '6ba7b811-9dad-11d1-80b4-00c04fd430c8';
 exports.URL = URL;
 
-function _default(name, version, hashfunc) {
+function v35(name, version, hashfunc) {
   function generateUUID(value, namespace, buf, offset) {
+    var _namespace;
+
     if (typeof value === 'string') {
       value = stringToBytes(value);
     }
@@ -6341,7 +7408,7 @@ function _default(name, version, hashfunc) {
       namespace = (0, _parse.default)(namespace);
     }
 
-    if (namespace.length !== 16) {
+    if (((_namespace = namespace) === null || _namespace === void 0 ? void 0 : _namespace.length) !== 16) {
       throw TypeError('Namespace must be array-like (16 iterable integer values, 0-255)');
     } // Compute hash of namespace and value, Per 4.3
     // Future: Use spread syntax when supported on all platforms, e.g. `bytes =
@@ -6365,7 +7432,7 @@ function _default(name, version, hashfunc) {
       return buf;
     }
 
-    return (0, _stringify.default)(bytes);
+    return (0, _stringify.unsafeStringify)(bytes);
   } // Function#name is not settable on some platforms (#270)
 
 
@@ -6390,15 +7457,21 @@ function _default(name, version, hashfunc) {
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.default = void 0;
+exports["default"] = void 0;
+
+var _native = _interopRequireDefault(__nccwpck_require__(2054));
 
 var _rng = _interopRequireDefault(__nccwpck_require__(807));
 
-var _stringify = _interopRequireDefault(__nccwpck_require__(8950));
+var _stringify = __nccwpck_require__(8950);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function v4(options, buf, offset) {
+  if (_native.default.randomUUID && !buf && !options) {
+    return _native.default.randomUUID();
+  }
+
   options = options || {};
 
   const rnds = options.random || (options.rng || _rng.default)(); // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
@@ -6417,11 +7490,11 @@ function v4(options, buf, offset) {
     return buf;
   }
 
-  return (0, _stringify.default)(rnds);
+  return (0, _stringify.unsafeStringify)(rnds);
 }
 
 var _default = v4;
-exports.default = _default;
+exports["default"] = _default;
 
 /***/ }),
 
@@ -6434,7 +7507,7 @@ exports.default = _default;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.default = void 0;
+exports["default"] = void 0;
 
 var _v = _interopRequireDefault(__nccwpck_require__(5998));
 
@@ -6444,7 +7517,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 const v5 = (0, _v.default)('v5', 0x50, _sha.default);
 var _default = v5;
-exports.default = _default;
+exports["default"] = _default;
 
 /***/ }),
 
@@ -6457,7 +7530,7 @@ exports.default = _default;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.default = void 0;
+exports["default"] = void 0;
 
 var _regex = _interopRequireDefault(__nccwpck_require__(814));
 
@@ -6468,11 +7541,11 @@ function validate(uuid) {
 }
 
 var _default = validate;
-exports.default = _default;
+exports["default"] = _default;
 
 /***/ }),
 
-/***/ 1595:
+/***/ 2414:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
@@ -6481,7 +7554,7 @@ exports.default = _default;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.default = void 0;
+exports["default"] = void 0;
 
 var _validate = _interopRequireDefault(__nccwpck_require__(6900));
 
@@ -6492,15 +7565,15 @@ function version(uuid) {
     throw TypeError('Invalid UUID');
   }
 
-  return parseInt(uuid.substr(14, 1), 16);
+  return parseInt(uuid.slice(14, 15), 16);
 }
 
 var _default = version;
-exports.default = _default;
+exports["default"] = _default;
 
 /***/ }),
 
-/***/ 2357:
+/***/ 9491:
 /***/ ((module) => {
 
 "use strict";
@@ -6508,7 +7581,7 @@ module.exports = require("assert");
 
 /***/ }),
 
-/***/ 3129:
+/***/ 2081:
 /***/ ((module) => {
 
 "use strict";
@@ -6516,7 +7589,7 @@ module.exports = require("child_process");
 
 /***/ }),
 
-/***/ 6417:
+/***/ 6113:
 /***/ ((module) => {
 
 "use strict";
@@ -6524,7 +7597,7 @@ module.exports = require("crypto");
 
 /***/ }),
 
-/***/ 8614:
+/***/ 2361:
 /***/ ((module) => {
 
 "use strict";
@@ -6532,7 +7605,7 @@ module.exports = require("events");
 
 /***/ }),
 
-/***/ 5747:
+/***/ 7147:
 /***/ ((module) => {
 
 "use strict";
@@ -6540,7 +7613,7 @@ module.exports = require("fs");
 
 /***/ }),
 
-/***/ 9225:
+/***/ 3292:
 /***/ ((module) => {
 
 "use strict";
@@ -6548,7 +7621,7 @@ module.exports = require("fs/promises");
 
 /***/ }),
 
-/***/ 8605:
+/***/ 3685:
 /***/ ((module) => {
 
 "use strict";
@@ -6556,7 +7629,7 @@ module.exports = require("http");
 
 /***/ }),
 
-/***/ 7211:
+/***/ 5687:
 /***/ ((module) => {
 
 "use strict";
@@ -6564,7 +7637,7 @@ module.exports = require("https");
 
 /***/ }),
 
-/***/ 1631:
+/***/ 1808:
 /***/ ((module) => {
 
 "use strict";
@@ -6572,7 +7645,7 @@ module.exports = require("net");
 
 /***/ }),
 
-/***/ 2087:
+/***/ 2037:
 /***/ ((module) => {
 
 "use strict";
@@ -6580,7 +7653,7 @@ module.exports = require("os");
 
 /***/ }),
 
-/***/ 5622:
+/***/ 1017:
 /***/ ((module) => {
 
 "use strict";
@@ -6588,7 +7661,7 @@ module.exports = require("path");
 
 /***/ }),
 
-/***/ 2413:
+/***/ 2781:
 /***/ ((module) => {
 
 "use strict";
@@ -6596,7 +7669,7 @@ module.exports = require("stream");
 
 /***/ }),
 
-/***/ 4304:
+/***/ 1576:
 /***/ ((module) => {
 
 "use strict";
@@ -6604,7 +7677,7 @@ module.exports = require("string_decoder");
 
 /***/ }),
 
-/***/ 8213:
+/***/ 9512:
 /***/ ((module) => {
 
 "use strict";
@@ -6612,7 +7685,7 @@ module.exports = require("timers");
 
 /***/ }),
 
-/***/ 4016:
+/***/ 4404:
 /***/ ((module) => {
 
 "use strict";
@@ -6620,7 +7693,7 @@ module.exports = require("tls");
 
 /***/ }),
 
-/***/ 1669:
+/***/ 3837:
 /***/ ((module) => {
 
 "use strict";
