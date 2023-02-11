@@ -1,4 +1,4 @@
-name: 'bds-gametest-run'
+name: 'add-on-ci'
 description: 'Hacky workaround, not recommended to use by others'
 author: 'SmokeyStack'
 inputs:
