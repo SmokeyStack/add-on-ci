@@ -6,6 +6,7 @@ import { SummaryTableCell, SummaryTableRow } from '@actions/core/lib/summary'
 import { promises } from 'fs'
 import * as path from 'path'
 
+
 import {
     BDS_PATH
 } from './types/inputs'
@@ -24,10 +25,10 @@ async function run(): Promise<void> {
 
         await core.group('Run bedrock server', async () => {
             await exec.exec(
-                path.join(process.cwd(), BDS_PATH, 'bedrock_server'),
+                'bedrock_server',
                 [],
                 {
-                    cwd: path.join(process.cwd(),)
+                    cwd: BDS_PATH
                 }
             )
         })

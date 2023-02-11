@@ -61,8 +61,8 @@ function run() {
                 }
             }
             yield core.group('Run bedrock server', () => __awaiter(this, void 0, void 0, function* () {
-                yield exec.exec(path.join(process.cwd(), inputs_1.BDS_PATH, 'bedrock_server'), [], {
-                    cwd: path.join(process.cwd())
+                yield exec.exec('bedrock_server', [], {
+                    cwd: inputs_1.BDS_PATH
                 });
             }));
             core.summary.addHeading('Test results');
